@@ -65,7 +65,7 @@ struct QEMUClock {
 
 struct QEMUTimer {
     QEMUClock *clock;
-    int64_t expire_time;	/* in nanoseconds */
+    int64_t expire_time;    /* in nanoseconds */
     int scale;
     QEMUTimerCB *cb;
     void *opaque;
@@ -231,7 +231,7 @@ void configure_alarms(char const *opt)
             /* Ignore */
             goto next;
 
-	/* Swap */
+        /* Swap */
         tmp = alarm_timers[i];
         alarm_timers[i] = alarm_timers[cur];
         alarm_timers[cur] = tmp;
@@ -492,7 +492,7 @@ static void host_alarm_handler(int host_signum)
 {
     struct qemu_alarm_timer *t = alarm_timer;
     if (!t)
-	return;
+        return;
 
     if (alarm_has_dynticks(t) ||
         qemu_next_alarm_deadline () <= 0) {

@@ -31,8 +31,8 @@
 #include "qemu-timer.h"
 #include "qapi-types.h"
 
-#define BLOCK_FLAG_ENCRYPT	1
-#define BLOCK_FLAG_COMPAT6	4
+#define BLOCK_FLAG_ENCRYPT      1
+#define BLOCK_FLAG_COMPAT6      4
 
 #define BLOCK_IO_LIMIT_READ     0
 #define BLOCK_IO_LIMIT_WRITE    1
