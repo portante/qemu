@@ -457,7 +457,7 @@ void slirp_select_poll(fd_set *readfds, fd_set *writefds, fd_set *xfds,
                  * (and they can crash the program)
                  */
                 if (so->so_state & SS_NOFDREF || so->s == -1) {
-                   continue;
+					continue;
                 }
 
                 /*
@@ -535,7 +535,7 @@ void slirp_select_poll(fd_set *readfds, fd_set *writefds, fd_set *xfds,
                  */
 #ifdef PROBE_CONN
                 if (so->so_state & SS_ISFCONNECTING) {
-                    ret = qemu_recv(so->s, &ret, 0,0);
+                    ret = qemu_recv(so->s, &ret, 0, 0);
 
                     if (ret < 0) {
                         /* XXX */
@@ -549,7 +549,7 @@ void slirp_select_poll(fd_set *readfds, fd_set *writefds, fd_set *xfds,
 
                         /* tcp_input will take care of it */
                     } else {
-                        ret = send(so->s, &ret, 0,0);
+                        ret = send(so->s, &ret, 0, 0);
                         if (ret < 0) {
                             /* XXX */
                             if (errno == EAGAIN || errno == EWOULDBLOCK ||
@@ -563,7 +563,7 @@ void slirp_select_poll(fd_set *readfds, fd_set *writefds, fd_set *xfds,
                           so->so_state &= ~SS_ISFCONNECTING;
                         }
                     }
-                    tcp_input((struct mbuf *)NULL, sizeof(struct ip),so);
+                    tcp_input((struct mbuf *)NULL, sizeof(struct ip), so);
                 } /* SS_ISFCONNECTING */
 #endif
             }
