@@ -457,7 +457,7 @@ void slirp_select_poll(fd_set *readfds, fd_set *writefds, fd_set *xfds,
                  * (and they can crash the program)
                  */
                 if (so->so_state & SS_NOFDREF || so->s == -1) {
-					continue;
+                    continue;
                 }
 
                 /*
