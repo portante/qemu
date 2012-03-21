@@ -112,7 +112,7 @@
    reopen it to see if the disk has been changed */
 #define FD_OPEN_TIMEOUT (1000000000)
 
-#define MAX_BLOCKSIZE	4096
+#define MAX_BLOCKSIZE   4096
 
 typedef struct BDRVRawState {
     int fd;
@@ -494,7 +494,7 @@ again:
 #endif
     if (!fstat(fd, &sb) && (S_IFCHR & sb.st_mode)) {
 #ifdef DIOCGMEDIASIZE
-	if (ioctl(fd, DIOCGMEDIASIZE, (off_t *)&size))
+    if (ioctl(fd, DIOCGMEDIASIZE, (off_t *)&size))
 #elif defined(DIOCGPART)
         {
                 struct partinfo pi;
@@ -894,7 +894,7 @@ static int hdev_has_zero_init(BlockDriverState *bs)
 
 static BlockDriver bdrv_host_device = {
     .format_name        = "host_device",
-    .protocol_name        = "host_device",
+    .protocol_name      = "host_device",
     .instance_size      = sizeof(BDRVRawState),
     .bdrv_probe_device  = hdev_probe_device,
     .bdrv_file_open     = hdev_open,
@@ -903,12 +903,12 @@ static BlockDriver bdrv_host_device = {
     .create_options     = raw_create_options,
     .bdrv_has_zero_init = hdev_has_zero_init,
 
-    .bdrv_aio_readv	= raw_aio_readv,
-    .bdrv_aio_writev	= raw_aio_writev,
-    .bdrv_aio_flush	= raw_aio_flush,
+    .bdrv_aio_readv     = raw_aio_readv,
+    .bdrv_aio_writev    = raw_aio_writev,
+    .bdrv_aio_flush     = raw_aio_flush,
 
     .bdrv_truncate      = raw_truncate,
-    .bdrv_getlength	= raw_getlength,
+    .bdrv_getlength     = raw_getlength,
     .bdrv_get_allocated_file_size
                         = raw_get_allocated_file_size,
 
@@ -1015,7 +1015,7 @@ static BlockDriver bdrv_host_floppy = {
     .format_name        = "host_floppy",
     .protocol_name      = "host_floppy",
     .instance_size      = sizeof(BDRVRawState),
-    .bdrv_probe_device	= floppy_probe_device,
+    .bdrv_probe_device  = floppy_probe_device,
     .bdrv_file_open     = floppy_open,
     .bdrv_close         = raw_close,
     .bdrv_create        = hdev_create,
@@ -1024,10 +1024,10 @@ static BlockDriver bdrv_host_floppy = {
 
     .bdrv_aio_readv     = raw_aio_readv,
     .bdrv_aio_writev    = raw_aio_writev,
-    .bdrv_aio_flush	= raw_aio_flush,
+    .bdrv_aio_flush     = raw_aio_flush,
 
     .bdrv_truncate      = raw_truncate,
-    .bdrv_getlength	= raw_getlength,
+    .bdrv_getlength     = raw_getlength,
     .bdrv_get_allocated_file_size
                         = raw_get_allocated_file_size,
 
@@ -1114,7 +1114,7 @@ static BlockDriver bdrv_host_cdrom = {
     .format_name        = "host_cdrom",
     .protocol_name      = "host_cdrom",
     .instance_size      = sizeof(BDRVRawState),
-    .bdrv_probe_device	= cdrom_probe_device,
+    .bdrv_probe_device  = cdrom_probe_device,
     .bdrv_file_open     = cdrom_open,
     .bdrv_close         = raw_close,
     .bdrv_create        = hdev_create,
@@ -1123,7 +1123,7 @@ static BlockDriver bdrv_host_cdrom = {
 
     .bdrv_aio_readv     = raw_aio_readv,
     .bdrv_aio_writev    = raw_aio_writev,
-    .bdrv_aio_flush	= raw_aio_flush,
+    .bdrv_aio_flush     = raw_aio_flush,
 
     .bdrv_truncate      = raw_truncate,
     .bdrv_getlength     = raw_getlength,
@@ -1233,7 +1233,7 @@ static BlockDriver bdrv_host_cdrom = {
     .format_name        = "host_cdrom",
     .protocol_name      = "host_cdrom",
     .instance_size      = sizeof(BDRVRawState),
-    .bdrv_probe_device	= cdrom_probe_device,
+    .bdrv_probe_device  = cdrom_probe_device,
     .bdrv_file_open     = cdrom_open,
     .bdrv_close         = raw_close,
     .bdrv_create        = hdev_create,
@@ -1242,7 +1242,7 @@ static BlockDriver bdrv_host_cdrom = {
 
     .bdrv_aio_readv     = raw_aio_readv,
     .bdrv_aio_writev    = raw_aio_writev,
-    .bdrv_aio_flush	= raw_aio_flush,
+    .bdrv_aio_flush     = raw_aio_flush,
 
     .bdrv_truncate      = raw_truncate,
     .bdrv_getlength     = raw_getlength,
