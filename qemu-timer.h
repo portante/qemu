@@ -95,17 +95,10 @@ static inline int64_t get_ticks_per_sec(void)
 /* real time host monotonic timer */
 static inline int64_t get_clock_realtime(void)
 {
-#if defined(__linux__) || (defined(__FreeBSD__) && __FreeBSD_version >= 500000) \
-    || defined(__DragonFly__) || defined(__FreeBSD_kernel__)
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return (ts.tv_sec * 1000000000LL) + ts.tv_nsec;
-#else
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000000000LL) + (tv.tv_usec * 1000);
-#endif
+    return tv.tv_sec * 1000000000LL + (tv.tv_usec * 1000);
 }
 
 /* Warning: don't insert tracepoints into these functions, they are
