@@ -795,27 +795,36 @@ int init_timer_alarm(void)
     struct qemu_alarm_timer *t = NULL;
     int i, err = -1;
 
-    for (i = 0; alarm_timers[i].name; i++) {
+    /*
+     * Find the first timer that can be successfully started, and record it as
+     * our "alarm timer".
+     */
+
+    for (i = 0; alarm_timers[i].name && (err != 0); i++) {
         t = &alarm_timers[i];
 
         err = t->start(t);
-        if (!err)
-            break;
+
+        /* 
+         * Loop will exit when timer successfully starts, indicated by a
+         * return value of 0.
+         */
     }
 
-    if (err) {
+    if (err != 0) {
+        /*
+         * We could not find a timer that worked, we don't care to remember
+         * why it did not work, just return ENOENT to note we don't have one
+         * working.
+         */
         err = -ENOENT;
-        goto fail;
+    } else {
+        /* first event is at time 0 */
+        atexit(quit_timers);
+        t->pending = 1;
+        alarm_timer = t;
     }
 
-    /* first event is at time 0 */
-    atexit(quit_timers);
-    t->pending = 1;
-    alarm_timer = t;
-
-    return 0;
-
-fail:
     return err;
 }
 
