@@ -781,6 +781,10 @@ static void win32_rearm_timer(struct qemu_alarm_timer *t,
 
 static void quit_timers(void)
 {
+    /*
+     * FIXME: we have multiple threads running in a qemu-kvm process, don't we
+     * need to synchronize this?
+     */
     struct qemu_alarm_timer *t = alarm_timer;
     alarm_timer = NULL;
     t->stop(t);
