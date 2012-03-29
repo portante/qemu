@@ -49,9 +49,9 @@
 /***********************************************************/
 /* timers */
 
-#define QEMU_CLOCK_REALTIME 0
-#define QEMU_CLOCK_VIRTUAL  1
-#define QEMU_CLOCK_HOST     2
+#define QEMU_CLOCK_REALTIME 0  /* CLOCK_MONOTONIC */
+#define QEMU_CLOCK_VIRTUAL  1  /* VM Clock */
+#define QEMU_CLOCK_HOST     2  /* CLOCK_REALTIME */
 
 struct QEMUClock {
     int type;
@@ -472,16 +472,16 @@ void qemu_run_all_timers(void)
 {
     alarm_timer->pending = 0;
 
+    /* vm time timers */
+    qemu_run_timers(vm_clock);
+    qemu_run_timers(rt_clock);
+    qemu_run_timers(host_clock);
+
     /* rearm timer, if not periodic */
     if (alarm_timer->expired) {
         alarm_timer->expired = 0;
         qemu_rearm_alarm_timer(alarm_timer);
     }
-
-    /* vm time timers */
-    qemu_run_timers(vm_clock);
-    qemu_run_timers(rt_clock);
-    qemu_run_timers(host_clock);
 }
 
 #ifdef _WIN32
@@ -533,7 +533,7 @@ static int dynticks_start_timer(struct qemu_alarm_timer *t)
 #endif /* SIGEV_THREAD_ID */
     ev.sigev_signo = SIGALRM;
 
-    if (timer_create(CLOCK_REALTIME, &ev, &host_timer)) {
+    if (timer_create(CLOCK_MONOTONIC, &ev, &host_timer)) {
         perror("timer_create");
 
         /* disable dynticks */
@@ -781,6 +781,10 @@ static void win32_rearm_timer(struct qemu_alarm_timer *t,
 
 static void quit_timers(void)
 {
+    /*
+     * FIXME: we have multiple threads running in a qemu-kvm process, don't we
+     * need to synchronize this?
+     */
     struct qemu_alarm_timer *t = alarm_timer;
     alarm_timer = NULL;
     t->stop(t);
@@ -791,27 +795,36 @@ int init_timer_alarm(void)
     struct qemu_alarm_timer *t = NULL;
     int i, err = -1;
 
-    for (i = 0; alarm_timers[i].name; i++) {
+    /*
+     * Find the first timer that can be successfully started, and record it as
+     * our "alarm timer".
+     */
+
+    for (i = 0; alarm_timers[i].name && (err != 0); i++) {
         t = &alarm_timers[i];
 
         err = t->start(t);
-        if (!err)
-            break;
+
+        /* 
+         * Loop will exit when timer successfully starts, indicated by a
+         * return value of 0.
+         */
     }
 
-    if (err) {
+    if (err != 0) {
+        /*
+         * We could not find a timer that worked, we don't care to remember
+         * why it did not work, just return ENOENT to note we don't have one
+         * working.
+         */
         err = -ENOENT;
-        goto fail;
+    } else {
+        /* first event is at time 0 */
+        atexit(quit_timers);
+        t->pending = 1;
+        alarm_timer = t;
     }
 
-    /* first event is at time 0 */
-    atexit(quit_timers);
-    t->pending = 1;
-    alarm_timer = t;
-
-    return 0;
-
-fail:
     return err;
 }
 
