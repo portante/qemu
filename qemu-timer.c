@@ -49,9 +49,9 @@
 /***********************************************************/
 /* timers */
 
-#define QEMU_CLOCK_REALTIME 0
-#define QEMU_CLOCK_VIRTUAL  1
-#define QEMU_CLOCK_HOST     2
+#define QEMU_CLOCK_REALTIME 0  /* CLOCK_MONOTONIC */
+#define QEMU_CLOCK_VIRTUAL  1  /* VM Clock */
+#define QEMU_CLOCK_HOST     2  /* CLOCK_REALTIME */
 
 struct QEMUClock {
     int type;
