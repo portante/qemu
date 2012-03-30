@@ -23,7 +23,7 @@ enum {
     STREAM_BUFFER_SIZE = 512 * 1024, /* in bytes */
 };
 
-#define SLICE_TIME 100000000ULL /* ns */
+#define SLICE_TIME 100000000ULL /* 100,000,000 ns */
 
 typedef struct {
     int64_t next_slice_time;
@@ -50,7 +50,7 @@ static int64_t ratelimit_calculate_delay(RateLimit *limit, uint64_t n)
 
 static void ratelimit_set_speed(RateLimit *limit, uint64_t speed)
 {
-    limit->slice_quota = speed / (1000000000ULL / SLICE_TIME);
+    limit->slice_quota = speed / (NANOSECONDS_PER_SECOND / SLICE_TIME);
 }
 
 typedef struct StreamBlockJob {

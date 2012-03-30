@@ -570,14 +570,15 @@ static void dynticks_rearm_timer(struct qemu_alarm_timer *t,
         fprintf(stderr, "Internal timer error: aborting\n");
         exit(1);
     }
-    current_ns = timeout.it_value.tv_sec * 1000000000LL + timeout.it_value.tv_nsec;
+    current_ns = (timeout.it_value.tv_sec * NANOSECONDS_PER_SECOND)
+            + timeout.it_value.tv_nsec;
     if (current_ns && current_ns <= nearest_delta_ns)
         return;
 
     timeout.it_interval.tv_sec = 0;
     timeout.it_interval.tv_nsec = 0; /* 0 for one-shot timer */
-    timeout.it_value.tv_sec =  nearest_delta_ns / 1000000000;
-    timeout.it_value.tv_nsec = nearest_delta_ns % 1000000000;
+    timeout.it_value.tv_sec =  nearest_delta_ns / NANOSECONDS_PER_SECOND;
+    timeout.it_value.tv_nsec = nearest_delta_ns % NANOSECONDS_PER_SECOND;
     if (timer_settime(host_timer, 0 /* RELATIVE */, &timeout, NULL)) {
         perror("settime");
         fprintf(stderr, "Internal timer error: aborting\n");
@@ -613,8 +614,8 @@ static void unix_rearm_timer(struct qemu_alarm_timer *t,
 
     itv.it_interval.tv_sec = 0;
     itv.it_interval.tv_usec = 0; /* 0 for one-shot timer */
-    itv.it_value.tv_sec =  nearest_delta_ns / 1000000000;
-    itv.it_value.tv_usec = (nearest_delta_ns % 1000000000) / 1000;
+    itv.it_value.tv_sec  =  nearest_delta_ns / NANOSECONDS_PER_SECOND;
+    itv.it_value.tv_usec = (nearest_delta_ns % NANOSECONDS_PER_SECOND) / 1000;
     err = setitimer(ITIMER_REAL, &itv, NULL);
     if (err) {
         perror("setitimer");

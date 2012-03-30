@@ -128,7 +128,7 @@
 #define PORTSC_CONNECT       (1 << 0)     // Current Connect Status
 
 #define FRAME_TIMER_FREQ 1000
-#define FRAME_TIMER_NS   (1000000000 / FRAME_TIMER_FREQ)
+#define FRAME_TIMER_NS   (NANOSECONDS_PER_SECOND / FRAME_TIMER_FREQ)
 
 #define NB_MAXINTRATE    8        // Max rate at which controller issues ints
 #define NB_PORTS         6        // Number of downstream ports

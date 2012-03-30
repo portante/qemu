@@ -17,6 +17,8 @@
 #define SCALE_US 1000
 #define SCALE_NS 1
 
+#define NANOSECONDS_PER_SECOND  1000000000ll
+
 typedef struct QEMUClock QEMUClock;
 typedef void QEMUTimerCB(void *opaque);
 
@@ -89,7 +91,7 @@ static inline int64_t qemu_get_clock_ms(QEMUClock *clock)
 
 static inline int64_t get_ticks_per_sec(void)
 {
-    return 1000000000LL;
+    return NANOSECONDS_PER_SECOND;
 }
 
 /* real time host monotonic timer */
@@ -99,12 +101,12 @@ static inline int64_t get_clock_realtime(void)
     || defined(__DragonFly__) || defined(__FreeBSD_kernel__)
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    return (ts.tv_sec * 1000000000LL) + ts.tv_nsec;
+    return (ts.tv_sec * NANOSECONDS_PER_SECOND) + ts.tv_nsec;
 #else
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000000000LL) + (tv.tv_usec * 1000);
+    return (tv.tv_sec * NANOSECONDS_PER_SECOND) + (tv.tv_usec * 1000);
 #endif
 }
 
@@ -132,7 +134,7 @@ static inline int64_t get_clock(void)
     if (use_rt_clock) {
         struct timespec ts;
         clock_gettime(CLOCK_MONOTONIC, &ts);
-        return ts.tv_sec * 1000000000LL + ts.tv_nsec;
+        return (ts.tv_sec * NANOSECONDS_PER_SECOND) + ts.tv_nsec;
     } else
 #endif
     {

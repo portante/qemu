@@ -751,7 +751,8 @@ int if_encap(Slirp *slirp, struct mbuf *ifm)
             ifm->arp_requested = true;
 
             /* Expire request and drop outgoing packet after 1 second */
-            ifm->expiration_date = qemu_get_clock_ns(rt_clock) + 1000000000ULL;
+            ifm->expiration_date = qemu_get_clock_ns(rt_clock)
+                    + (1 * NANOSECONDS_PER_SECOND);
         }
         return 0;
     } else {

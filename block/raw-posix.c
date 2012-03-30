@@ -110,7 +110,7 @@
 
 /* if the FD is not accessed during that time (in ns), we try to
    reopen it to see if the disk has been changed */
-#define FD_OPEN_TIMEOUT (1000000000)
+#define FD_OPEN_TIMEOUT (1 * NANOSECONDS_PER_SECOND)
 
 #define MAX_BLOCKSIZE   4096
 

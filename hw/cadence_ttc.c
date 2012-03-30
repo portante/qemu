@@ -92,7 +92,7 @@ static uint64_t cadence_timer_get_ns(CadenceTimerState *s, uint64_t timer_steps)
      * (or overflow can happen below) */
     assert(timer_steps <= 1ULL << 32);
 
-    uint64_t r = timer_steps * 1000000000ULL;
+    uint64_t r = timer_steps * NANOSECONDS_PER_SECOND;
     if (s->reg_clock & CLOCK_CTRL_PS_EN) {
         r >>= 16 - (((s->reg_clock & CLOCK_CTRL_PS_V) >> 1) + 1);
     } else {
@@ -104,7 +104,7 @@ static uint64_t cadence_timer_get_ns(CadenceTimerState *s, uint64_t timer_steps)
 
 static uint64_t cadence_timer_get_steps(CadenceTimerState *s, uint64_t ns)
 {
-    uint64_t to_divide = 1000000000ULL;
+    uint64_t to_divide = NANOSECONDS_PER_SECOND;
 
     uint64_t r = ns;
      /* for very large intervals (> 8s) do some division first to stop

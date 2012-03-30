@@ -2827,7 +2827,7 @@ char *bdrv_snapshot_dump(char *buf, int buf_size, QEMUSnapshotInfo *sn)
         strftime(date_buf, sizeof(date_buf),
                  "%Y-%m-%d %H:%M:%S", &tm);
 #endif
-        secs = sn->vm_clock_nsec / 1000000000;
+        secs = sn->vm_clock_nsec / NANOSECONDS_PER_SECOND;
         snprintf(clock_buf, sizeof(clock_buf),
                  "%02d:%02d:%02d.%03d",
                  (int)(secs / 3600),
