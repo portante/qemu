@@ -168,8 +168,8 @@ void ptimer_set_period(ptimer_state *s, int64_t period)
 /* Set counter frequency in Hz.  */
 void ptimer_set_freq(ptimer_state *s, uint32_t freq)
 {
-    s->period = 1000000000ll / freq;
-    s->period_frac = (1000000000ll << 32) / freq;
+    s->period = NANOSECONDS_PER_SECOND / freq;
+    s->period_frac = (NANOSECONDS_PER_SECOND << 32) / freq;
     if (s->enabled) {
         s->next_event = qemu_get_clock_ns(vm_clock);
         ptimer_reload(s);
@@ -180,6 +180,19 @@ void ptimer_set_freq(ptimer_state *s, uint32_t freq)
    count = limit.  */
 void ptimer_set_limit(ptimer_state *s, uint64_t limit, int reload)
 {
+    /*
+     * Artificially limit timeout rate to something
+     * achievable under QEMU.  Otherwise, QEMU spends all
+     * its time generating timer interrupts, and there
+     * is no forward progress.
+     * About ten microseconds is the fastest that really works
+     * on the current generation of host machines.
+     */
+
+    if (limit * s->period < 10000 && s->period) {
+        limit = 10000 / s->period;
+    }
+
     s->limit = limit;
     if (reload)
         s->delta = limit;

@@ -173,6 +173,7 @@ qemu-img-cmds.h: $(SRC_PATH)/qemu-img-cmds.hx
 $(qapi-obj-y): $(GENERATED_HEADERS)
 qapi-dir := $(BUILD_DIR)/qapi-generated
 qemu-ga$(EXESUF): LIBS = $(LIBS_QGA)
+qemu-ga$(EXESUF): QEMU_CFLAGS += -I $(qapi-dir)
 
 gen-out-type = $(subst .,-,$(suffix $@))
 
@@ -216,6 +217,7 @@ clean:
 	rm -f *.o *.d *.a *.lo $(TOOLS) $(HELPERS-y) qemu-ga TAGS cscope.* *.pod *~ */*~
 	rm -Rf .libs
 	rm -f slirp/*.o slirp/*.d audio/*.o audio/*.d block/*.o block/*.d net/*.o net/*.d fsdev/*.o fsdev/*.d ui/*.o ui/*.d qapi/*.o qapi/*.d qga/*.o qga/*.d
+	rm -f qom/*.o qom/*.d
 	rm -f qemu-img-cmds.h
 	rm -f trace/*.o trace/*.d
 	rm -f trace.c trace.h trace.c-timestamp trace.h-timestamp
@@ -266,8 +268,8 @@ BLOBS=
 endif
 
 install-doc: $(DOCS)
-	$(INSTALL_DIR) "$(DESTDIR)$(docdir)"
-	$(INSTALL_DATA) qemu-doc.html  qemu-tech.html "$(DESTDIR)$(docdir)"
+	$(INSTALL_DIR) "$(DESTDIR)$(qemu_docdir)"
+	$(INSTALL_DATA) qemu-doc.html  qemu-tech.html "$(DESTDIR)$(qemu_docdir)"
 ifdef CONFIG_POSIX
 	$(INSTALL_DIR) "$(DESTDIR)$(mandir)/man1"
 	$(INSTALL_DATA) qemu.1 qemu-img.1 "$(DESTDIR)$(mandir)/man1"
@@ -279,8 +281,8 @@ ifdef CONFIG_VIRTFS
 	$(INSTALL_DATA) fsdev/virtfs-proxy-helper.1 "$(DESTDIR)$(mandir)/man1"
 endif
 install-sysconfig:
-	$(INSTALL_DIR) "$(DESTDIR)$(sysconfdir)/qemu"
-	$(INSTALL_DATA) $(SRC_PATH)/sysconfigs/target/target-x86_64.conf "$(DESTDIR)$(sysconfdir)/qemu"
+	$(INSTALL_DIR) "$(DESTDIR)$(qemu_confdir)"
+	$(INSTALL_DATA) $(SRC_PATH)/sysconfigs/target/target-x86_64.conf "$(DESTDIR)$(qemu_confdir)"
 
 install: all $(if $(BUILD_DOCS),install-doc) install-sysconfig
 	$(INSTALL_DIR) "$(DESTDIR)$(bindir)"
@@ -292,14 +294,14 @@ ifneq ($(HELPERS-y),)
 	$(INSTALL_PROG) $(STRIP_OPT) $(HELPERS-y) "$(DESTDIR)$(libexecdir)"
 endif
 ifneq ($(BLOBS),)
-	$(INSTALL_DIR) "$(DESTDIR)$(datadir)"
+	$(INSTALL_DIR) "$(DESTDIR)$(qemu_datadir)"
 	set -e; for x in $(BLOBS); do \
-		$(INSTALL_DATA) $(SRC_PATH)/pc-bios/$$x "$(DESTDIR)$(datadir)"; \
+		$(INSTALL_DATA) $(SRC_PATH)/pc-bios/$$x "$(DESTDIR)$(qemu_datadir)"; \
 	done
 endif
-	$(INSTALL_DIR) "$(DESTDIR)$(datadir)/keymaps"
+	$(INSTALL_DIR) "$(DESTDIR)$(qemu_datadir)/keymaps"
 	set -e; for x in $(KEYMAPS); do \
-		$(INSTALL_DATA) $(SRC_PATH)/pc-bios/keymaps/$$x "$(DESTDIR)$(datadir)/keymaps"; \
+		$(INSTALL_DATA) $(SRC_PATH)/pc-bios/keymaps/$$x "$(DESTDIR)$(qemu_datadir)/keymaps"; \
 	done
 	for d in $(TARGET_DIRS); do \
 	$(MAKE) -C $$d $@ || exit 1 ; \
@@ -326,7 +328,7 @@ TEXIFLAG=$(if $(V),,--quiet)
 	$(call quiet-command,texi2dvi $(TEXIFLAG) -I . $<,"  GEN   $@")
 
 %.html: %.texi
-	$(call quiet-command,$(MAKEINFO) $(MAKEINFOFLAGS) --html $< -o $@, \
+	$(call quiet-command,LC_ALL=C $(MAKEINFO) $(MAKEINFOFLAGS) --html $< -o $@, \
 	"  GEN   $@")
 
 %.info: %.texi
@@ -350,25 +352,25 @@ qemu-img-cmds.texi: $(SRC_PATH)/qemu-img-cmds.hx
 qemu.1: qemu-doc.texi qemu-options.texi qemu-monitor.texi
 	$(call quiet-command, \
 	  perl -Ww -- $(SRC_PATH)/scripts/texi2pod.pl $< qemu.pod && \
-	  pod2man --section=1 --center=" " --release=" " qemu.pod > $@, \
+	  $(POD2MAN) --section=1 --center=" " --release=" " qemu.pod > $@, \
 	  "  GEN   $@")
 
 qemu-img.1: qemu-img.texi qemu-img-cmds.texi
 	$(call quiet-command, \
 	  perl -Ww -- $(SRC_PATH)/scripts/texi2pod.pl $< qemu-img.pod && \
-	  pod2man --section=1 --center=" " --release=" " qemu-img.pod > $@, \
+	  $(POD2MAN) --section=1 --center=" " --release=" " qemu-img.pod > $@, \
 	  "  GEN   $@")
 
 fsdev/virtfs-proxy-helper.1: fsdev/virtfs-proxy-helper.texi
 	$(call quiet-command, \
 	  perl -Ww -- $(SRC_PATH)/scripts/texi2pod.pl $< fsdev/virtfs-proxy-helper.pod && \
-	  pod2man --section=1 --center=" " --release=" " fsdev/virtfs-proxy-helper.pod > $@, \
+	  $(POD2MAN) --section=1 --center=" " --release=" " fsdev/virtfs-proxy-helper.pod > $@, \
 	  "  GEN   $@")
 
 qemu-nbd.8: qemu-nbd.texi
 	$(call quiet-command, \
 	  perl -Ww -- $(SRC_PATH)/scripts/texi2pod.pl $< qemu-nbd.pod && \
-	  pod2man --section=8 --center=" " --release=" " qemu-nbd.pod > $@, \
+	  $(POD2MAN) --section=8 --center=" " --release=" " qemu-nbd.pod > $@, \
 	  "  GEN   $@")
 
 dvi: qemu-doc.dvi qemu-tech.dvi
