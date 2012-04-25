@@ -112,6 +112,11 @@ M: Blue Swirl <blauwirbel@gmail.com>
 S: Maintained
 F: target-sparc/
 
+UniCore32
+M: Guan Xuetao <gxt@mprc.pku.edu.cn>
+S: Maintained
+F: target-unicore32/
+
 X86
 M: qemu-devel@nongnu.org
 S: Odd Fixes
@@ -548,6 +553,8 @@ Tracing
 M: Stefan Hajnoczi <stefanha@linux.vnet.ibm.com>
 S: Maintained
 F: trace/
+F: scripts/tracetool.py
+F: scripts/tracetool/
 F: docs/tracing.txt
 T: git://github.com/stefanha/qemu.git tracing
 

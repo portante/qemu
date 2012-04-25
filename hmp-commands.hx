@@ -92,8 +92,8 @@ ETEXI
     },
 
 STEXI
-@item block_job_set_stream
-@findex block_job_set_stream
+@item block_job_set_speed
+@findex block_job_set_speed
 Set maximum speed for a background block operation.
 ETEXI
 
@@ -622,8 +622,7 @@ ETEXI
         .args_type  = "id:s",
         .params     = "device",
         .help       = "remove device",
-        .user_print = monitor_user_noop,
-        .mhandler.cmd_new = do_device_del,
+        .mhandler.cmd = hmp_device_del,
     },
 
 STEXI
