@@ -1,5 +1,6 @@
 #include "sysemu.h"
 #include "cpu.h"
+#include "dyngen-exec.h"
 #include "qemu-char.h"
 #include "sysemu.h"
 #include "qemu-char.h"

@@ -30,6 +30,7 @@
 #include <string.h>
 #include <stddef.h>
 #include "cpu.h"
+#include "dyngen-exec.h"
 #include "helper.h"
 #include "qemu-log.h"
 
