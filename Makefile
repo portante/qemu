@@ -23,7 +23,7 @@ ifeq ($(TRACE_BACKEND),dtrace)
 GENERATED_HEADERS += trace-dtrace.h
 endif
 GENERATED_HEADERS += qmp-commands.h qapi-types.h qapi-visit.h
-GENERATED_SOURCES += qmp-marshal.c qapi-types.c qapi-visit.c
+GENERATED_SOURCES += qmp-marshal.c qapi-types.c qapi-visit.c trace.c
 
 # Don't try to regenerate Makefile or configure
 # We don't generate any of them
@@ -220,11 +220,11 @@ clean:
 	rm -f qom/*.o qom/*.d
 	rm -f qemu-img-cmds.h
 	rm -f trace/*.o trace/*.d
-	rm -f trace.c trace.h trace.c-timestamp trace.h-timestamp
 	rm -f trace-dtrace.dtrace trace-dtrace.dtrace-timestamp
+	@# May not be present in GENERATED_HEADERS
 	rm -f trace-dtrace.h trace-dtrace.h-timestamp
-	rm -f $(GENERATED_HEADERS)
-	rm -f $(GENERATED_SOURCES)
+	rm -f $(foreach f,$(GENERATED_HEADERS),$(f) $(f)-timestamp)
+	rm -f $(foreach f,$(GENERATED_SOURCES),$(f) $(f)-timestamp)
 	rm -rf $(qapi-dir)
 	$(MAKE) -C tests/tcg clean
 	for d in $(ALL_SUBDIRS) $(QEMULIBS) libcacard; do \
@@ -257,6 +257,7 @@ vgabios-stdvga.bin vgabios-vmware.bin vgabios-qxl.bin \
 ppc_rom.bin openbios-sparc32 openbios-sparc64 openbios-ppc \
 pxe-e1000.rom pxe-eepro100.rom pxe-ne2k_pci.rom \
 pxe-pcnet.rom pxe-rtl8139.rom pxe-virtio.rom \
+qemu-icon.bmp \
 bamboo.dtb petalogix-s3adsp1800.dtb petalogix-ml605.dtb \
 mpc8544ds.dtb \
 multiboot.bin linuxboot.bin kvmvapic.bin \
